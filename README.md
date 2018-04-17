@@ -1,2 +1,3 @@
 # isca
-Iceland Snow Cover Analysis
+Matlab scripts for the Iceland Snow Cover Analysis Project
+
