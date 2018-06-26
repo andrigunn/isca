@@ -14,6 +14,7 @@ clear all; close all; clc
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
 addpath('E:\Dropbox\Matlab')
 addpath('E:\Dropbox\Matlab\mraleigh')
+E:\Dropbox\Matlab\cbrewer
 cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
 %% Define directories
 mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
@@ -21,7 +22,7 @@ myd_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MYD10A1';                          
 img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\tmp';       % Directory to store exported images
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\';  % Directory to write output files
 %% Settings
-vis = 'off';                                                                        % Visibility of figures On(1) / Off(0)                        
+vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
 printFigure = 0;                                                                    % Print figure to img_dir folder (1)
 geo = Modis_make_geo;                                                               % Data for plotting. Shape files and coordinates of hdf files
 [ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
@@ -33,10 +34,10 @@ cd(myd_data_dir);                                                               
 myd = dir('MYD10A1*');                                                              % Read directory structure
 mod = dates2header(mod);                                                            % Write time and date information to directory information for data
 myd = dates2header(myd);                                                            % Write time and date information to directory information for data    
-%% Check quality of onput
-[missing_dates_mod first_day_mod last_day_mod ] = Modis_QAQC(mod);
+%% Check quality of input to find missing dates
+[missing_dates_mod first_day_mod last_day_mod ] = Modis_QAQC(mod);                  
 [missing_dates_myd first_day_myd last_day_myd ] = Modis_QAQC(myd);
-%% Mergin of data. 
+%% Mergin of data. %%
 % A) Select a MOD tile
 % B) Check if a MYD tile is avaliable for the same day
 % C) If a MYD exist merge else use the MOD only
@@ -50,7 +51,7 @@ DATAFIELD_NAME='NDSI_Snow_Cover';   % DAta field from HDF file
 %%
 clc
 ii = 0;
-for k = run_dates();
+for k = run_dates(1:2);
     % 20.12.2017 / 1:2000 keyrt á Elapsed time is 31556.819461 seconds. 
     ii = ii+1;
 % Find if we have data tiles that match the date we look for 
@@ -145,7 +146,7 @@ for k = run_dates();
         MAT_Stats = [MAT_Stats;x_t];
 
        
-        %Modis_plot_merger_AT(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc) 
+        Modis_P_merger_Aqua_Terra(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc) 
         save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
         
         close all
@@ -154,5 +155,4 @@ end
          
         save([data_write_dir,'Stats\','MAT_Stats'],'MAT_Stats');  
     
-    sprintf('FIN')
-toc
+    sprintf('FINISHED')

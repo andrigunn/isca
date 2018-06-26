@@ -14,6 +14,7 @@ clear all; close all; clc
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
 addpath('E:\Dropbox\Matlab')
 addpath('E:\Dropbox\Matlab\mraleigh')
+addpath('E:\Dropbox\Matlab\cbrewer')
 cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
 %% Define directories
 mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
@@ -21,7 +22,7 @@ myd_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MYD10A1';                          
 img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\tmp';       % Directory to store exported images
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\';  % Directory to write output files
 %% Settings
-vis = 'off';                                                                        % Visibility of figures On(1) / Off(0)                        
+vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
 printFigure = 0;                                                                    % Print figure to img_dir folder (1)
 geo = Modis_make_geo;                                                               % Data for plotting. Shape files and coordinates of hdf files
 [ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
@@ -50,7 +51,7 @@ DATAFIELD_NAME='NDSI_Snow_Cover';   % DAta field from HDF file
 %%
 clc
 ii = 0;
-for k = run_dates(1:10);
+for k = run_dates(100);
     % 20.12.2017 / 1:2000 keyrt á Elapsed time is 31556.819461 seconds. 
     ii = ii+1;
 % Find if we have data tiles that match the date we look for 
@@ -74,54 +75,54 @@ for k = run_dates(1:10);
         save([data_write_dir,'MODDATA\',MODDATA_NAME(1:15)],'MODDATA'); 
         
         else
-        clear MODDATA MODDATA_NAME MODHDF_DATE    
-        av_mo = nan;
-        no_el_in_mo= nan;
-        no_el_data_mo= nan;
-        no_el_clouds_mo= nan;
-        prct_data_in_mo= nan;
-        prct_clouds_in_mo= nan;
-        csum1_mo= nan;
-        csum2_mo= nan;
+            clear MODDATA MODDATA_NAME MODHDF_DATE    
+            av_mo = nan;
+            no_el_in_mo= nan;
+            no_el_data_mo= nan;
+            no_el_clouds_mo= nan;
+            prct_data_in_mo= nan;
+            prct_clouds_in_mo= nan;
+            csum1_mo= nan;
+            csum2_mo= nan;
         end
     
         if isempty(imyd_name) == 0      % Zero if numbers are in matrix 
-        fname_myd = myd(imyd_name).name;    % name of the HDF file from MYD to use%   
-        cd(myd_data_dir)
-        [MYDDATA, MYDDATA_NAME,MYDHDF_DATE] = Modis_import_data_hdf(...
-        fname_myd, GRID_NAME, DATAFIELD_NAME); 
-        [av_my,no_el_in_my,no_el_data_my,no_el_clouds_my,prct_data_in_my,prct_clouds_in_my,csum1_my,csum2_my] =...
-        Modis_in_filter_sca(MYDDATA, ins.in_isl);
-    
-        %Modis_plot_merger_AT(MYDDATA,vis,printFigure,k,MYDDATA_NAME,img_dir,geo,prct_clouds_in_my) 
-        save([data_write_dir,'MYDDATA\',MYDDATA_NAME(1:15)],'MYDDATA'); 
+            fname_myd = myd(imyd_name).name;    % name of the HDF file from MYD to use%   
+            cd(myd_data_dir)
+            [MYDDATA, MYDDATA_NAME,MYDHDF_DATE] = Modis_import_data_hdf(...
+            fname_myd, GRID_NAME, DATAFIELD_NAME); 
+            [av_my,no_el_in_my,no_el_data_my,no_el_clouds_my,prct_data_in_my,prct_clouds_in_my,csum1_my,csum2_my] =...
+            Modis_in_filter_sca(MYDDATA, ins.in_isl);
+
+            %Modis_plot_merger_AT(MYDDATA,vis,printFigure,k,MYDDATA_NAME,img_dir,geo,prct_clouds_in_my) 
+            save([data_write_dir,'MYDDATA\',MYDDATA_NAME(1:15)],'MYDDATA'); 
         else
-        clear MYDDATA MYDDATA_NAME MYDHDF_DATE
-        av_my = nan;
-        no_el_in_my= nan;
-        no_el_data_my= nan;
-        no_el_clouds_my= nan;
-        prct_data_in_my= nan;
-        prct_clouds_in_my= nan;
-        csum1_my= nan;
-        csum2_my= nan;
+            clear MYDDATA MYDDATA_NAME MYDHDF_DATE
+            av_my = nan;
+            no_el_in_my= nan;
+            no_el_data_my= nan;
+            no_el_clouds_my= nan;
+            prct_data_in_my= nan;
+            prct_clouds_in_my= nan;
+            csum1_my= nan;
+            csum2_my= nan;
         end
         
         if isempty(imod_name) == 0
-        MCDAT = MODDATA;
-        x = isnan(MCDAT);
-        MCDDATA_NAME = MODDATA_NAME; MCDDATA_NAME(2) = 'C';
-        mod_used = 1
+            MCDAT = MODDATA;
+            x = isnan(MCDAT);
+            MCDDATA_NAME = MODDATA_NAME; MCDDATA_NAME(2) = 'C';
+            mod_used = 1
         elseif isempty(imod_name) == 1
-        MCDAT = MYDDATA;
-        MCDDATA_NAME = MYDDATA_NAME; MCDDATA_NAME(2) = 'C';
-        myd_used = 2
+            MCDAT = MYDDATA;
+            MCDDATA_NAME = MYDDATA_NAME; MCDDATA_NAME(2) = 'C';
+            myd_used = 2
         end
         
         if isempty(imyd_name) == 0
-        MCDAT(x) = MYDDATA(x);
+            MCDAT(x) = MYDDATA(x);
         else
-        MCDAT = MODDATA;
+            MCDAT = MODDATA;
         end
         
         % Reiknum tölfræði fyrir samsetningur
@@ -145,11 +146,11 @@ for k = run_dates(1:10);
         MAT_Stats = [MAT_Stats;x_t];
 
        
-        %Modis_plot_merger_AT(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc) 
+        Modis_P_merger_Aqua_Terra(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc) 
         save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
         
         close all
-        clear MCDAT MODDATA MYDDATA x_t
+        %clear MCDAT MODDATA MYDDATA x_t
 end
          
         save([data_write_dir,'Stats\','MAT_Stats'],'MAT_Stats');  
