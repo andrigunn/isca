@@ -10,7 +10,7 @@ clear all; close all; clc
 %%
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
 addpath('E:\Dropbox\Matlab')
-%addpath('E:\Dropbox\Matlab\mraleigh')
+addpath('E:\Dropbox\Matlab\mraleigh')
 %addpath('E:\Dropbox\Matlab\cbrewer')
 cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
 %% Define directories
@@ -34,12 +34,24 @@ years_in_dataset = unique([mcd.year])
 %%
 clc
 ii = 0;
-for k = 1:length(years_in_dataset);                                         % Counter for number of years in the dataset                             
+time_dim = day_buffer_backward + 1 + day_buffer_forward;
+for k = 1:1%length(years_in_dataset);                                         % Counter for number of years in the dataset                             
     ki = find([mcd.year] == years_in_dataset(k));                           % Indexes for years for k
     
     for j = day_buffer_backward:length(ki)-day_buffer_forward;
         ind = ki(j)
+        % Make data stack
+        if ind == 3
+            i0 = ind-day_buffer_backward
+        else
+            i0 = ind-day_buffer_backward-1
+        end
         
+        for ji = 1:time_dim
+            i0 = i0+1
+            D(:,:)=load(mcd(i0).name);
+            D() = 
+        end
     end
     
 end
