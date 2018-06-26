@@ -1,7 +1,7 @@
 function data = dates2header(data)
 % Read in data structure from dir function and add time and date
 % information to the structure
-
+%%
 for i = 1:length(data);
     mod_date = data(i).name;
     HDF_DATE = mod_date(10:16);

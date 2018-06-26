@@ -10,7 +10,10 @@
 
 %% Folders and directories
 clear all; close all; clc
+%%
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
+addpath('E:\Dropbox\Matlab')
+addpath('E:\Dropbox\Matlab\mraleigh')
 cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
 %% Define directories
 mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
@@ -30,10 +33,10 @@ cd(myd_data_dir);                                                               
 myd = dir('MYD10A1*');                                                              % Read directory structure
 mod = dates2header(mod);                                                            % Write time and date information to directory information for data
 myd = dates2header(myd);                                                            % Write time and date information to directory information for data    
-%% Check quality of onput
-[missing_dates_mod first_day_mod last_day_mod ] = QAQCMODIS(mod);
-[missing_dates_myd first_day_myd last_day_myd ] = QAQCMODIS(myd);
-%% Mergin of data. 
+%% Check quality of input to find missing dates
+[missing_dates_mod first_day_mod last_day_mod ] = Modis_QAQC(mod);                  
+[missing_dates_myd first_day_myd last_day_myd ] = Modis_QAQC(myd);
+%% Mergin of data. %%
 % A) Select a MOD tile
 % B) Check if a MYD tile is avaliable for the same day
 % C) If a MYD exist merge else use the MOD only
@@ -47,7 +50,7 @@ DATAFIELD_NAME='NDSI_Snow_Cover';   % DAta field from HDF file
 %%
 clc
 ii = 0;
-for k = run_dates();
+for k = run_dates(1:10);
     % 20.12.2017 / 1:2000 keyrt á Elapsed time is 31556.819461 seconds. 
     ii = ii+1;
 % Find if we have data tiles that match the date we look for 
@@ -151,5 +154,4 @@ end
          
         save([data_write_dir,'Stats\','MAT_Stats'],'MAT_Stats');  
     
-    sprintf('FIN')
-toc
+    sprintf('FINISHED')

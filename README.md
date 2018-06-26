@@ -7,8 +7,10 @@ The scope of the project is to create a snow cover climatology for Iceland based
 Merge TERRA and AQUA data daily files into one combined file
 
 Uses: 
-Modis_make_geo % Reads the coordinates for the HDF tiles used from Modis
-Modis_make_ins_outs % Makes masks to mask out data
+Modis_make_geo          % Reads the coordinates for the HDF tiles used from Modis
+Modis_make_ins_outs     % Makes masks to mask out data
+dates2header
+Modis_QAQC
 
 
 %% Combined snow cover maps in Iceland from Modis Aqua and Terra

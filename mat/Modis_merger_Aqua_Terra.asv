@@ -10,7 +10,10 @@
 
 %% Folders and directories
 clear all; close all; clc
+%%
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
+addpath('E:\Dropbox\Matlab')
+addpath('E:\Dropbox\Matlab\mraleigh')
 cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
 %% Define directories
 mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
@@ -23,19 +26,16 @@ printFigure = 0;                                                                
 geo = Modis_make_geo;                                                               % Data for plotting. Shape files and coordinates of hdf files
 [ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
 %%
-MAT_Stats = table;                                                                  
-% CD to data folder with hdf files for MOD10A1 product
-cd(mod_data_dir)
-mod = dir('MOD10A1*'); 
-% CD to data folder with hdf files for MYD10A1 product
-cd(myd_data_dir);
-myd = dir('MYD10A1*');                                  % Data structure with all MYD data
-% Write time and date information to directory information for data
-mod = dates2header(mod);
-myd = dates2header(myd);
-% Check quality of onput
-[missing_dates_mod first_day_mod last_day_mod ] = QAQCMODIS(mod);
-[missing_dates_myd first_day_myd last_day_myd ] = QAQCMODIS(myd);
+MAT_Stats = table;                                                                  % Make an table to write statistics to 
+cd(mod_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
+mod = dir('MOD10A1*');                                                              % Read directory structure
+cd(myd_data_dir);                                                                   % CD to data folder with hdf files for MYD10A1 product
+myd = dir('MYD10A1*');                                                              % Read directory structure
+mod = dates2header(mod);                                                            % Write time and date information to directory information for data
+myd = dates2header(myd);                                                            % Write time and date information to directory information for data    
+%% Check quality of onput
+[missing_dates_mod first_day_mod last_day_mod ] = Modis_QAQC(mod);
+[missing_dates_myd first_day_myd last_day_myd ] = Modis_QAQC(myd);
 %% Mergin of data. 
 % A) Select a MOD tile
 % B) Check if a MYD tile is avaliable for the same day
