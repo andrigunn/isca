@@ -58,22 +58,6 @@ for ky = 1:1%length(years_in_dataset);                                       % C
             % Calculate cloud cover and other relevant properties
             [av_mo,no_el_in_mo,no_el_data_mo,no_el_clouds_mo,prct_data_in_mo,prct_clouds_in_mo,csum1_mo,csum2_mo] =...
             Modis_in_filter_sca(Dt, ins.in_isl);
-        
-            % Búum til dagsetningar fyrir tölfræðitöfluna
-             dn = mcd(i0).daten;
-             Daten = dn;
-             tb = time_builder(dn); 
-             year = tb(1); 
-             month = tb(2);
-             day = tb(3);
-             hour = tb(4);
-             minute = tb(5);
-             doy = tb(6);
-
-
-           x_t =  table(Daten,year,month,day,hour,minute,doy,...
-                       av_mo,no_el_in_mo,no_el_data_mo,no_el_clouds_mo,prct_data_in_mo,prct_clouds_in_mo,csum1_mo,csum2_mo)
-           MCD_Stats = [MCD_Stats;x_t];
 
             
 

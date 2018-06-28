@@ -6,7 +6,8 @@ function [filter_average,no_el_in,no_el_data,no_el_clouds,prct_data_in,prct_clou
 % in file with ins to calcluate for 
 
 %% Output
-% csum is the sum of pixels with data/no data compared to the input structure size reita í in skránni
+% csum is the sum of pixels with data/no data compared to the input structure size
+% reita í in skránni
 % csum2 er það sama og fyrir csum nema bara með hlutfall gagna
 % filter_average er meðaltal fyrir reiti þar sem eru gögn
 %% FOR TESTING
