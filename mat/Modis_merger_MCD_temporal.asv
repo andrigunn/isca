@@ -43,12 +43,13 @@ Data_CDMF3B3(ind_nan_CDM0) = Data_CDM_F3B3(ind_nan_CDM0);
 %% View data stack
 clc, close all
 Modis_plotter(Data_CDM0,geo,    ['CDM0 Date: ',datestr(Date_CDM0)]) 
-Modis_plotter(Data_CDM_F1,geo,  ['Data_CDM_F1 Date: ',datestr(Date_CDM_F1)]) 
-Modis_plotter(Data_CDM_B1,geo,  ['Data_CDM_B1 Date: ',datestr(Date_CDM_B1)]) 
-Modis_plotter(Data_CDM_F2,geo,  ['Data_CDM_F2 Date: ',datestr(Date_CDM_F2)]) 
-Modis_plotter(Data_CDM_B2,geo,  ['Data_CDM_B2 Date: ',datestr(Date_CDM_B2)]) 
-Modis_plotter(Data_CDM_F3,geo,  ['Data_CDM_F3 Date: ',datestr(Date_CDM_F3)]) 
-Modis_plotter(Data_CDM_B3,geo,  ['Data_CDM_B3 Date: ',datestr(Date_CDM_B3)]) 
+%%
+Modis_plotter(Data_CDM_F1,geo,  ['Data_CDM_F1 Date: ',datestr(Date_CDM0)]) 
+Modis_plotter(Data_CDM_B1,geo,  'Data_CDM_B1 Date: ',datestr(Date_CDM0)]) 
+Modis_plotter(Data_CDM_F2,geo,  'Data_CDM_F2 Date: ',datestr(Date_CDM0)]) 
+Modis_plotter(Data_CDM_B2,geo,  'Data_CDM_B2 Date: ',datestr(Date_CDM0)]) 
+Modis_plotter(Data_CDM_F3,geo,  'Data_CDM_F3 Date: ',datestr(Date_CDM0)]) 
+Modis_plotter(Data_CDM_B3,geo,  'Data_CDM_B3 Date: ',datestr(Date_CDM0)]) 
 %%
 indices = find(isnan(D1));
 D1(indices) = 0;

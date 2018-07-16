@@ -53,14 +53,17 @@ for ky = 1:1%length(years_in_dataset);                                     % Cou
  %%       % Maker each data stack to merge
             for ji = 1:time_dim                                            % Process each year, time_dim length of filter (days)
                 i0 = i0+1
-                Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                Date_vector(ji,:) = mcd(i0).daten
-
+                D(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
+                Dt = load(mcd(i0).name);
+                Da(ji,:) = mcd(i0).daten
                 
                 
-                %Dt = load(mcd(i0).name);
+                
                 %Dt = Dt.MCDAT;
-% Calculate cloud cover and other relevant properties
+            
+            
+            
+%             % Calculate cloud cover and other relevant properties
 %             [av_mo,no_el_in_mo,no_el_data_mo,no_el_clouds_mo,prct_data_in_mo,prct_clouds_in_mo,csum1_mo,csum2_mo] =...
 %             Modis_in_filter_sca(Dt, ins.in_isl);
 %         

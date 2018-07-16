@@ -1,4 +1,4 @@
-function Modis_plotter(data,geo)   
+function Modis_plotter(data,geo,date_data)   
 %% Plotting outlines *.shp files
 % load('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\geo_hv17.mat')
 % S = shaperead('E:\Dropbox\Harmonie data\is50v_strandlina_flakar_ll');
@@ -7,7 +7,8 @@ function Modis_plotter(data,geo)
 % UTLINAHOF = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\HOFSJ_UTLINA_nn');
 % UTLINALAN = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\LANGJ_UTLINA');
 %% [left bottom width height]
-vis = 'on'
+vis = 'on';
+addpath('E:\Dropbox\Matlab\cbrewer');
 f = figure( 'visible',vis,'Position', [50, 100, 900, 600]);
 %
 
@@ -40,8 +41,9 @@ tightmap;
 box off;
 ax = gca;
 ax.Visible = 'off';
+
 %name_str = [data_name(1:7),' V006 ',data_name(9:12),data_name(13:15),' NDSI Snow Cover'];
-%hText = text(0.01,0.0,name_str,'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','latex');
+hText = text(0.01,1.0,date_data,'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','latex');
 %hText = text(0.01,0.08,['Date: ',datestr(date,'dd.mm.yyyy')],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','latex');
 %hText = text(0.01,0.04,['No data: ',num2str(round(100*prct_clouds)),' \%'],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','latex');
 
