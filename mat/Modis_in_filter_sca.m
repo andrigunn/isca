@@ -3,9 +3,13 @@ function [filter_average,no_el_in,no_el_data,no_el_clouds,prct_data_in,prct_clou
 %% Lesum inn in skrá með indexum fyrir gildi sem við viljum eyða út.
 %% Input
 % 2400 x 2400 Modis tile file
-% in file with ins to calcluate for 
+% In (1/0) file with ins to calcluate for. In Mask on the same grid as the Modis
+% tile
+
 
 %% Output
+% filter_average is a nan mean of all elements that have data within the in
+% mask provided
 % csum is the sum of pixels with data/no data compared to the input structure size reita í in skránni
 % csum2 er það sama og fyrir csum nema bara með hlutfall gagna
 % filter_average er meðaltal fyrir reiti þar sem eru gögn
