@@ -1,4 +1,4 @@
-function Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day, Date,geo,print_fig,img_dir,print_name,vis)
+function Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day, Date,geo,print_fig,img_dir,print_name,vis,lw)
 %% Plotting data sca from Modis_Stacker
 %%Testing 
 f_sca = figure( 'visible',vis,'Position', [50, 100, 1200, 800]);

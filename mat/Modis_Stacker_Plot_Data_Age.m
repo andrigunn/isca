@@ -1,4 +1,4 @@
-function Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day, Center_date, Date,geo,print_fig,img_dir,print_name,vis)
+function Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day, Center_date, Date,geo,print_fig,img_dir,print_name,vis,lw)
 
 %% Plotting data age from Modis_Stacker
 f_age = figure( 'visible',vis,'Position', [50, 100, 1200, 800]);
