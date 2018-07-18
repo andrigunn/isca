@@ -9,7 +9,7 @@ The tools listed here do the following:
 
 
 ## Matlab scripts 
-### Modis_merger_Aqua_Terra.m
+### Modis_Merger.m
 Merge TERRA and AQUA data daily files into one combined file
 
 Uses: 
@@ -25,4 +25,9 @@ Output: MCD10A1_YYYYDOY merged Aqua and Terra tiles for same dates
 
 Add: NetCDF storage
 
-###
+### Modis_Aggr.m
+Aggregate merged output from Modis_Merger.m with a temporal filter of certain number of days
+
+Input: MCD10A1_YYYYDOY merged Aqua and Terra tiles for same dates
+Output: MMCDDATA_XXD_YYYYDOY
+    where XX is the number of days for the temporal filter
