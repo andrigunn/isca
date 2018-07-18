@@ -1,6 +1,12 @@
-# isca
+# Iceland Snow Cover Analysis Project
 ## Overview
-The scope of the project is to create a snow cover climatology for Iceland based on Modis Aqua and Terra MOD10.A1 V006 binary snow cover
+The scope of the project is to create a snow cover climatology for Iceland based on Modis Aqua and Terra MOD10.A1 V006 snow cover. The tools applied here can also be applied to make a "operational" product by merging daily AQUA and TERRA snow cover tiles with various temporal settings to reduce missing data due to clouds.
+The project is written in Matlab but will be move to Python in the near future. 
+
+The tools listed here do the following:
+- Merge daily MODIS Aqua and Terra snow cover tiles (MOD10A1 V006)
+- Apply a temporal aggregate filter with variable number of days that either aggregate to a center date in a Modis data stack or a end date in a Moids data stack
+
 
 ## Matlab scripts for the Iceland Snow Cover Analysis Project
 ### Modis_merger_Aqua_Terra.m
