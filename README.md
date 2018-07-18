@@ -8,7 +8,7 @@ The tools listed here do the following:
 - Apply a temporal aggregate filter with variable number of days that either aggregate to a center date in a Modis data stack or a end date in a Moids data stack
 
 
-## Matlab scripts for the Iceland Snow Cover Analysis Project
+## Matlab scripts 
 ### Modis_merger_Aqua_Terra.m
 Merge TERRA and AQUA data daily files into one combined file
 
