@@ -1,4 +1,4 @@
-function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir,data_write_dir,write_data,plotting_on,print_fig,vis)  
+function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins)  
 % Aggregates merged MOD10A1 and MYD10A1 (MCDAT) data from the input
 % datastack to a single aggregated structure with data age and aggregated
 % fSCA
@@ -119,8 +119,8 @@ if plotting_on ==1
     close all, clc
     lw = 0.1;                                   % Line width for plotting
     Date = Date_vector(Center_date)
-    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',end_day,'D_Stack_age'],vis,lw)
-    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',end_day,'D_Stack_fsca'],vis,lw)
+    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_age'],vis,lw)
+    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_fsca'],vis,lw)
 else
 end
 %% Write data to MAT file
