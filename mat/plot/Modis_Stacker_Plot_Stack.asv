@@ -1,0 +1,46 @@
+function Modis_Stacker_Plot_Stack(Data_stack,Center_date, geo,print_fig,img_dir,print_name,vis,lw)
+%% TESTING
+lw = 0.1
+%% Plotting data age from Modis_Stacker
+latlimit = [63.35 66.58]; lonlimit = [-24.6 -13.4];
+close all
+for i = 1:length(Data_stack);
+    %f_stack = figure( 'visible',vis,'Position', [50, 100, 400, 300]);
+    hold on 
+    axesm('MapProjection','mercator','MapLatLimit',latlimit,'MapLonLimit',lonlimit)%,'Position', AxisPos(i, :));
+subplot(1,length(Data_stack),1)
+    h = pcolorm(geo.lat,geo.lon,(Data_stack(i).MCDAT));
+%     shading flat;
+%     fillm([geo.utlina_isl(4524).Y],[geo.utlina_isl(4524).X], 'FaceColor',[224/255 224/255 224/255],'linewidth',lw);
+%     fillm([geo.utlina_vat.Y],[geo.utlina_vat.X], 'w','linewidth',lw);
+%     fillm([geo.utlina_hof.Y],[geo.utlina_hof.X], 'w','linewidth',lw);
+%     fillm([geo.utlina_lan.Y],[geo.utlina_lan.X], 'w','linewidth',lw);
+%     uistack(h,'top');
+%     plotm([geo.utlina_isl(4524).Y],[geo.utlina_isl(4524).X], 'k','linewidth',lw);
+%     plotm([geo.utlina_vat.Y],[geo.utlina_vat.X], 'k','linewidth',lw);
+%     plotm([geo.utlina_hof.Y],[geo.utlina_hof.X], 'k','linewidth',lw);
+%     plotm([geo.utlina_lan.Y],[geo.utlina_lan.X], 'k','linewidth',lw);
+%     
+%     caxis([0 100])
+%     cmap = cbrewer('seq','BuPu',100);
+%     cmap = [0 0 0 ];
+%     colormap((cmap));
+%     hb=colorbar;
+%     set(hb, 'Position', [.91 .13 .017 .78]);
+%     set(hb,'FontSize',12);
+%     ylabel(hb, 'fSCA (%)')
+%     tightmap;
+%     box off;
+%     ax = gca;
+%     ax.Visible = 'off';
+%     title('Data Age')
+
+end
+% if print_fig == 1
+%     cd(img_dir)
+%     print([datestr(Date,'yyyymmdd'),print_name],'-dpng') 
+%     crop(img_dir)
+%     else
+% end
+        
+

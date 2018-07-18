@@ -78,15 +78,15 @@ if Center_Date_option == 1;
         ind_data_back = find(~isnan(Data_stack(i).MCDAT));                  % Indexes for DATA values in stack date  
         ind_data_forw = find(~isnan(Data_stack(end_day+1-i).MCDAT));        % Indexes for DATA values in stack date  
                        
-% Add to the matrix. Forward has priority to back        
+        % Add to the matrix. Forward has priority to back        
         Data_stacked_sca(ind_data_back) = Data_stack(i).MCDAT(ind_data_back);
 
     if  test_mode == 1;
-        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(i),geo,print_fig,img_dir,['DayInStack_',num2str(end_day+1-i),datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,lw);
+        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(i),geo,print_fig,img_dir,['_11_',num2str(end_day),'D_Stack_fsca'],vis,lw);
     else
     end
     
-        Data_stacked_sca(ind_data_forw) = Data_stack(end_day+1-i).MCDAT(ind_data_forw);
+        Data_stacked_sca(ind_data_forw) = Data_stack(i).MCDAT(ind_data_forw);
         
     if  test_mode == 1;
         Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(end_day+1-i),geo,print_fig,img_dir,['DayInStack_',num2str(end_day+1-i),datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,lw);
@@ -128,10 +128,10 @@ end
 
 if  test_mode == 1;
     print_name = 'Stack_out'
-    Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,lw)
+    Modis_Stacker_Plot_Stack(Data_stack,Date_vector, geo,print_fig,img_dir,print_name,vis,lw)
 else
 end
-% Plotting
+%% Plotting
 if plotting_on ==1;
     close all, clc
     lw = 0.1;                                   % Line width for plotting

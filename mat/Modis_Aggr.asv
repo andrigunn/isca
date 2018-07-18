@@ -59,24 +59,24 @@ function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,..
 % data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\MMCDDATA_7D';        % Directory to write output files
 % day_buffer_forward = 3;                                                               % No of days used in forward buffer  
 % day_buffer_backward = 3;                                                              % No of days used in backwards buffer  
+test_mode = 1
 %% SETTINGS
 
 %% Settings
 geo = Modis_make_geo;                                                             % Data for plotting. Shape files and coordinates of hdf files
 [ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
 %%
-cd(mcd_data_dir);                                                                    % CD to data folder with hdf files for MOD10A1 product
+cd(mcd_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
 mcd = dir('MCD10A1*');                                                              % Read directory structure
 mcd = dates2header_matFile(mcd);                                                    % Write time and date information to directory information for data
-years_in_dataset = unique([mcd.year]);                                               % Number of unique years in the datastructure
+years_in_dataset = unique([mcd.year])                                               % Number of unique years in the datastructure
 ii = 0;
 time_dim = day_buffer_backward + 1 + day_buffer_forward;                   % Number of days used in the temporal filter
 
 if test_mode == 0
-% Find each individual year in the dataset MCD10A1
-
-for ky = 1:length(years_in_dataset);                                       % Counter for number of years in the dataset                             
-    ki = find([mcd.year] == years_in_dataset(ky));                         % Indexes for years in ky
+% Find each individual year in the dataset MCD10A1 
+for ky = 1:length(years_in_dataset);                                     % Counter for number of years in the dataset                             
+    ki = find([mcd.year] == years_in_dataset(ky));                         % Indexes for years for k
 % Counter for center location in datastructure and +/- days to merge    
     for j = day_buffer_backward:length(ki)-day_buffer_forward;
         ind = ki(j);
@@ -87,32 +87,32 @@ for ky = 1:length(years_in_dataset);                                       % Cou
             i0 = ind-day_buffer_backward-1;                                 % All other indexes
         end
     end
+    
+    i0 = find([mcd(:).daten] == test_date);
+       i0 = i0-1;
 %% Maker each data stack to merge
-            for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
-                cd(mcd_data_dir);     
-                i0 = i0+1;
+            for ji = 1:time_dim                                            % Process each year, time_dim length of filter (days)
+                cd(mcd_data_dir)     
+                i0 = i0+1
                 Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                Date_vector(ji,:) = mcd(i0).daten;
-                Data_name(ji,:) = mcd(i0).name;
+                Date_vector(ji,:) = mcd(i0).daten
             end
                 
                 Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
+                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins) 
 end
-else % If test mode is enabled
-       i0 = find([mcd(:).daten] == test_date);
+    else
+        i0 = find([mcd(:).daten] == test_date);
        i0 = i0-1;
-       sprintf('Test on')
+       
        %% Maker each data stack to merge
-            for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
-                cd(mcd_data_dir);     
-                i0 = i0+1;
+            for ji = 1:time_dim                                            % Process each year, time_dim length of filter (days)
+                cd(mcd_data_dir)     
+                i0 = i0+1
                 Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                Date_vector(ji,:) = mcd(i0).daten;
-                Data_name(ji,:) = mcd(i0).name;
+                Date_vector(ji,:) = mcd(i0).daten
             end
-                sprintf('Test on')
+                
                 Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
-end
+                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins) 
 end
