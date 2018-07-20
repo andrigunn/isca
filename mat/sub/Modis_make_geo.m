@@ -1,7 +1,8 @@
 %% Make geo files for plotting MODIS data
-function geo = Modis_make_geo
-cd('E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo')
-load('geo_hv17.mat')
+function geo = Modis_make_geo(geo_data_dir);
+%cd('E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo')
+cd(geo_data_dir);
+load('geo_hv17.mat');
 % Make geo structure
 geo.lat = lat;
 geo.lon = lon; 

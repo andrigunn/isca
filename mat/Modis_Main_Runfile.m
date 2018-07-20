@@ -1,7 +1,6 @@
 %% Runfile for Modis ISCA
 clear all; close all; clc
 %% Add Paths to Code
-addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat\plot')
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat\sub')
 addpath('E:\Dropbox\Matlab')
@@ -12,6 +11,7 @@ mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                          
 myd_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MYD10A1';                              % Directory with Aqua data
 img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\tmp';       % Directory to store exported images
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\';  % Directory to write output files
+geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo'
 
 vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
 printFigure = 0;                                                                    % Print figure to img_dir folder (1)
@@ -42,7 +42,7 @@ data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\
 close all, clc
 Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,...
                     mcd_data_dir,data_write_dir,img_dir,write_data,...
-                    print_fig,plotting_on,vis,test_mode,test_date,cmapSnow,cmapAge)
+                    print_fig,plotting_on,vis,test_mode,test_date,cmapSnow,cmapAge,geo_data_dir)
 
 toc
 

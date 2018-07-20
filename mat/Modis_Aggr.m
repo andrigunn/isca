@@ -2,7 +2,8 @@ function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,..
                     mcd_data_dir,data_write_dir,img_dir,write_data,...
                     print_fig,plotting_on,vis,...
                     test_mode, test_date,...
-                    cmapSnow,cmapAge)
+                    cmapSnow,cmapAge,...
+                    geo_data_dir)
 %%
 % Makes a data stack from MCD10A1_YYYYDOY merged Aqua and Terra tiles for
 % same dates and then aggrigates the stack
@@ -63,8 +64,9 @@ function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,..
 %% SETTINGS
 
 %% Settings
-geo = Modis_make_geo;                                                             % Data for plotting. Shape files and coordinates of hdf files
-[ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
+Modis_Aggr_Stats = table;                                                                  % Make an table to write statistics to 
+geo = Modis_make_geo(geo_data_dir);                                                             % Data for plotting. Shape files and coordinates of hdf files
+[ins, outs] = Modis_make_ins_outs(geo_data_dir);                                                  % Loads masks for exluding data 
 %%
 cd(mcd_data_dir);                                                                    % CD to data folder with hdf files for MOD10A1 product
 mcd = dir('MCD10A1*');                                                              % Read directory structure
@@ -97,9 +99,13 @@ for ky = 1:length(years_in_dataset);                                       % Cou
                 Data_name(ji,:) = mcd(i0).name;
             end
                 
-                Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,cmapSnow,cmapAge); 
+        %Stacked_Stats = 
+        Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,cmapSnow,cmapAge); 
+        %x_t =  table(Stacked_Stats)
 end
+
+Modis_Aggr_Stats =[Modis_Aggr_Stats;x_t];
+
 else % If test mode is enabled
        i0 = find([mcd(:).daten] == test_date);
        i0 = i0-1;
@@ -116,4 +122,7 @@ else % If test mode is enabled
                 Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
                     img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge); 
 end
+
+save([data_write_dir,'Stats\','Modis_Aggr_Stats',],'Modis_Aggr_Stats');
+sprintf('FINISHED')
 end

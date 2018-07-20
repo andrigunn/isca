@@ -1,4 +1,7 @@
-function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge)  
+function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
+                                        img_dir,data_write_dir,write_data,...
+                                        plotting_on,print_fig,vis,ins,test_mode,...
+                                        cmapSnow,cmapAge)  
 % Aggregates merged MOD10A1 and MYD10A1 (MCDAT) data from the input
 % datastack to a single aggregated structure with data age and aggregated
 % fSCA
@@ -143,8 +146,9 @@ else
 end
 %% Write data to MAT file
 if write_data == 1; 
-    cd(data_write_dir);
-    save(['MMCDDATA_7D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
+    %cd(data_write_dir);
+    %save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
+    save([data_write_dir,'MMCDDATA_7D\MMCDDATA_7D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
 else
 end
     

@@ -1,3 +1,7 @@
+function = Modis_Merger(...
+    mod_data_dir,myd_data_dir,img_dir,data_write_dir,geo_data_dir,...
+    cmapAge,cmapSnow,...
+    vis,printFigure)
 %% Merge TERRA and AQUA data daily files into one combined file
 %  If there is no AQUA file only TERRA is used for the first years of
 %  operation
@@ -24,9 +28,8 @@
 % %% Settings
 % vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
 % printFigure = 0;                                                                    % Print figure to img_dir folder (1)
-geo = Modis_make_geo;                                                               % Data for plotting. Shape files and coordinates of hdf files
-[ins, outs] = Modis_make_ins_outs;                                              % Loads masks for exluding data 
-cmapSnow
+geo = Modis_make_geo(geo_data_dir);                                                               % Data for plotting. Shape files and coordinates of hdf files
+[ins, outs] = Modis_make_ins_outs(geo_data_dir);                                              % Loads masks for exluding data 
 %%
 MAT_Stats = table;                                                                  % Make an table to write statistics to 
 cd(mod_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
