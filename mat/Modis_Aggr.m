@@ -1,7 +1,8 @@
 function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,...
                     mcd_data_dir,data_write_dir,img_dir,write_data,...
                     print_fig,plotting_on,vis,...
-                    test_mode, test_date)
+                    test_mode, test_date,...
+                    cmapSnow,cmapAge)
 %%
 % Makes a data stack from MCD10A1_YYYYDOY merged Aqua and Terra tiles for
 % same dates and then aggrigates the stack
@@ -97,7 +98,7 @@ for ky = 1:length(years_in_dataset);                                       % Cou
             end
                 
                 Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
+                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,cmapSnow,cmapAge); 
 end
 else % If test mode is enabled
        i0 = find([mcd(:).daten] == test_date);
@@ -113,6 +114,6 @@ else % If test mode is enabled
             end
                 sprintf('Test on')
                 Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
+                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge); 
 end
 end
