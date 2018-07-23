@@ -1,6 +1,7 @@
 %% Runfile for Modis ISCA
 clear all; close all; clc
 %% Add Paths to Code
+addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat\plot')
 addpath('C:\Users\andrigun\Documents\GitHub\isca\mat\sub')
 addpath('E:\Dropbox\Matlab')
@@ -9,13 +10,19 @@ addpath('E:\Dropbox\Matlab\cbrewer')
 %% Define directories
 mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
 myd_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MYD10A1';                              % Directory with Aqua data
-img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\tmp';       % Directory to store exported images
-data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\';  % Directory to write output files
-geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo'
+img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\testing\';       % Directory to store exported images
+data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\testing\';  % Directory to write output files
+geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
 
 vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
-printFigure = 0;                                                                    % Print figure to img_dir folder (1)
+printFigure = 1;    
+plotting_on = 1;
+cmapSnow = cbrewer('seq','Blues',100);
 
+Modis_Merger(...
+    mod_data_dir,myd_data_dir,img_dir,data_write_dir,geo_data_dir,...
+    cmapSnow,...
+    vis,printFigure,plotting_on)
 %% Parameters and settings - Modis_Aggr.m
 % Main runfile for the MODIS ISCA
 tic
