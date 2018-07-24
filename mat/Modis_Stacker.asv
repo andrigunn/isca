@@ -129,28 +129,24 @@ end
      Stacked_Stats = [StackedResults,Merged_stats(:,1)',Merged_stats(:,2)']
     else
 end
-%%
 
-%% Plotting    
-Date = Date_vector(Center_date);
-if plotting_on ==1;
-     
-    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_age'],vis,cmapAge);
-    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_fsca'],vis,cmapSnow);
-    
-    if  test_mode == 1;
+if  test_mode == 1;
     print_name = 'Stack_out'
     Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,cmapSnow)
-    else
-    end
-    
+else
+end
+%% Plotting
+if plotting_on ==1;
+    Date = Date_vector(Center_date);
+    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_age'],vis,cmapAge);
+    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_fsca'],vis,cmapSnow);
 else
 end
 %% Write data to MAT file
 if write_data == 1; 
     %cd(data_write_dir);
     %save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
-    save([data_write_dir,'\MMCDDATA_',num2str(end_day),'D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
+    save([data_write_dir,'MMCDDATA_7D\MMCDDATA_7D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
 else
 end
     

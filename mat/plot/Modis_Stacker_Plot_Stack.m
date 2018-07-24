@@ -1,4 +1,4 @@
-function Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,lw,cmapSnow)
+function Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,cmapSnow)
 %% TESTING
 %lw = 0.1
 %% Plotting data age from Modis_Stacker
