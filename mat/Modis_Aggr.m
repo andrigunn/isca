@@ -87,7 +87,7 @@ years_in_dataset = unique([mcd.year]);                                          
 ii = 0;
 time_dim = day_buffer_backward + 1 + day_buffer_forward;                   % Number of days used in the temporal filter
 
-if test_mode == 0
+if test_mode == 0;
 % Find each individual year in the dataset MCD10A1
 
     for ky = 1:length(years_in_dataset);                                       % Counter for number of years in the dataset                             
@@ -107,18 +107,19 @@ if test_mode == 0
                     cd(mcd_data_dir);     
                     i0 = i0+1;
                     Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                    Date_vector(ji,:) = mcd(i0).daten
+                    Date_vector(ji,:) = mcd(i0).daten;
                     Data_name(ji,:) = mcd(i0).name;
 
                 end
                     Stacked_Stats =  Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir_stacker,data_write_dir_stacker,write_data,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge);     
                     Modis_Aggr_Stats =[Modis_Aggr_Stats;Stacked_Stats];
+                    sprintf(['Temoral filter of ',num2str(time_dim),' days for date ',datestr(Date_vector(1))])
             end
     end
             else % If test mode is enabled
                    i0 = find([mcd(:).daten] == test_date);
                    i0 = i0-1;
-                   sprintf('Test on')
+                   sprintf('Test on');
                    %% Maker each data stack to merge
                         for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
                             cd(mcd_data_dir);     
@@ -132,6 +133,6 @@ if test_mode == 0
                             img_dir_stacker,data_write_dir,data_write_dir_stacker,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge); 
                         end
 
-save([data_write_dir,'Stats\','Modis_Aggr_Stats',],'Modis_Aggr_Stats');
+save([data_write_dir,'Stats\','Modis_Aggr_Stats_',num2str(time_dim)],'Modis_Aggr_Stats');
 sprintf('FINISHED')
 end
