@@ -10,3 +10,7 @@ geo.utlina_isl = shaperead('is50v_strandlina_flakar_ll');
 geo.utlina_vat = shaperead('VATNAJ__UTLINA');
 geo.utlina_hof = shaperead('HOFSJ_UTLINA_nn');
 geo.utlina_lan = shaperead('LANGJ_UTLINA');
+load('geoMasks.mat')
+geo.masks.glaciers = geoMasks.glaciers_isl;
+geo.masks.waterbodies = geoMasks.waterbodies_isl;
+
