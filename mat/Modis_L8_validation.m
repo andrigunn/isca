@@ -88,16 +88,34 @@ Modis_plotter_L8(L8_500m,geo,'LANDSAT8 500 m','bSCA')
 %%
 Modis_plotter_L8(diff,geo,'DIFF MODIS AND LANDSAT8','dSCA')   
 %% Stats for comparison
-    diff_no_el = sum(sum(~isnan(diff)))
-    diff_correct = sum(diff(:) == 0)
-    diff_false = sum(diff(:) == 1)
-    no_snow_l8 = find(L8_500m == 1)
+    diff_no_el = sum(sum(~isnan(diff)));
+    diff_correct = sum(diff(:) == 0);
+    diff_false = sum(diff(:) == 1);
+    no_snow_l8 = find(L8_500m == 1);
     no_snow_l8 = numel(no_snow_l8)
-    no_land_l8 = find(L8_500m == 2)
+    no_land_l8 = find(L8_500m == 2);
     no_land_l8 = numel(no_land_l8)
     
     Confusion_matrix = confusionmat(modis_comparison_data(:),L8_500m(:))
-    
+%% Mask the MODIS data tile to the pixel vise coverage of the MODIS tiles
+L8_mask = L8_500m;
+L8_mask(~isnan(L8_mask)) = 1;
+Modis_masked = L8_mask.*modis_comparison_data;
+%%
+    no_snow_mod = find(Modis_masked == 1);
+    no_snow_mod = numel(no_snow_mod)
+    no_land_mod = find(Modis_masked == 2);
+    no_land_mod = numel(no_land_mod)
+
+
+%%
+Modis_plotter_L8(Modis_masked,geo,'MASK','bSCA')  
+
+
+
+
+
+
 % %%
 %   y = unique(diff);
 %   if any(isnan(y))

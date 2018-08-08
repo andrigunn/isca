@@ -65,7 +65,7 @@ c = ismember(QA,Snow);
 indexes_clear = find(c);
 QA(c) = MV_Snow; 
 %%
-Vinterpolated = geointerp(QA,RQ,geo.lat,geo.lon,'nearest');
+L8_500m = geointerp(QA,RQ,geo.lat,geo.lon,'nearest');
 %val = ltln2val(QA, RQ, lat, lon);
 %
 %%
@@ -77,23 +77,40 @@ close all
 modis_comparison_data = MCDAT;
 modis_comparison_data(modis_comparison_data<5)= MV_Land;
 modis_comparison_data(modis_comparison_data>=5)= MV_Snow;
-diff = modis_comparison_data-Vinterpolated;
+diff = modis_comparison_data-L8_500m;
 diff(diff == -1) = 1;
 %%
 Modis_plotter_L8(MCDAT,geo,'MCDAT fSCA','fSCA')   
 %%
 Modis_plotter_L8(modis_comparison_data,geo,'MODIS SCA','bSCA')   
 %%
-Modis_plotter_L8(Vinterpolated,geo,'LANDSAT8 500 m','bSCA')   
+Modis_plotter_L8(L8_500m,geo,'LANDSAT8 500 m','bSCA')   
 %%
 Modis_plotter_L8(diff,geo,'DIFF MODIS AND LANDSAT8','dSCA')   
+%% Stats for comparison
+    diff_no_el = sum(sum(~isnan(diff)))
+    diff_correct = sum(diff(:) == 0)
+    diff_false = sum(diff(:) == 1)
+    no_snow_l8 = find(L8_500m == 1)
+    no_snow_l8 = numel(no_snow_l8)
+    no_land_l8 = find(L8_500m == 2)
+    no_land_l8 = numel(no_land_l8)
+    
+    Confusion_matrix = confusionmat(modis_comparison_data(:),L8_500m(:))
+%% Mask the MODIS data tile to the pixel vise coverage of the MODIS tiles
+L8_mask = L8_500m;
+L8_mask(~isnan(L8_mask)) = 1;
+MNo
 %%
-diff_no_el = sum(sum(~isnan(diff)))
-diff_correct = sum(diff(:) == 0)
-diff_false = sum(diff(:) == 1)
+mask_modis_to_landsat_coverage = 
 
 %%
-Confusion_matrix = confusionmat(modis_comparison_data(:),Vinterpolated(:))
+Modis_plotter_L8(L8_mask,geo,'MASK','fSCA')  
+
+
+
+
+
 
 % %%
 %   y = unique(diff);
