@@ -14,9 +14,10 @@ data_dir_data_to_classify = 'F:\Maelingar\brunnur\Data\ISCA\Data\MMCDDATA_3D'
 [Zasp,Rasp] = arcgridread('E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo\isl_aspect_500m_wgs.txt');  % Read in ASPECT for ICELAND
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
 geo = Modis_make_geo(geo_data_dir);
+load('E:\Dropbox\Remote\geo_mcd43a3');        
 %% Map elevation to Lat and Lon from MODIS
-X = lat(:);                                                     % Latitudes for MODIS              
-Y = lon(:);                                                     % Longitudes for MODIS  
+X = geo.lat(:);                                                     % Latitudes for MODIS              
+Y = geo.lon(:);                                                     % Longitudes for MODIS  
 Z = ltln2val(Zdem,Rdem,X,Y);                                    % Map elevation from isl_dem_500m_wgs   
 A = ltln2val(Zasp,Rasp,X,Y);                                    % Map elevation from isl_dem_500m_wgs   
 %% Reshape for plotting
@@ -65,23 +66,29 @@ end
 clear results
 ic = 0;
 tic
-for ip = 1
+for ip = 100
     ic = ic+1;
+  %%
     load(nfile(ip).name)
-%% Mask glaciers as SCA
-
-%%
+%% Mask data
     SCA = Data_stacked_sca;
-    %%
-    SCA = SCA*geo.masks.glaciers;
-    SCA = SCA*geo.masks.waterbodies;
-    SCA = Data_stacked_sca(:);
-% Mask glaciers and water bodies out
+    %Modis_plotter(SCA,geo,'Raw')
+    %% Set glacier as fixed 100% snow cover 
+    ig = isnan([geo.masks.glaciers]);    iig = double(ig);
+    kg = find(iig==1);
+    SCA(kg) = 100;                   % Set glacier pixels to 100 fSCA
+    %Modis_plotter(SCA,geo,'RAW + Glacier Mask')
+    %% Set Water bodies to NaN
+    iw = isnan([geo.masks.waterbodies]);    iiw = double(iw);
+    kw = find(iiw==1);
+    SCA(kw) = NaN;                   % Set glacier pixels to 100 fSCA
+    %Modis_plotter(SCA,geo,'RAW + Glacier Mask + Watere bodies')    
+    %% Set thresholds of snow/now snow for fSCA
     SCA(SCA<=25)=0; 
-    SCA(SCA>25)=1;                              % Reclassify fSCA to bSCA (fractional snow cover to binary snow cover)
-    in_v = in(:);                               % Masking vector to throw out values over sea 0 is sea and 1 is land
-    k = find(in_v==1);                          % Find index for land elements
-    raw_data = [SCA(k),X(k),Y(k),Z(k),A(k)];         % All data matrix
+    SCA(SCA>25)=1;                                      % Reclassify fSCA to bSCA (fractional snow cover to binary snow cover)
+    in_v = in(:);                                       % Masking vector to throw out values over sea 0 is sea and 1 is land
+    k = find(in_v==1);                                  % Find index for land elements
+    raw_data = [SCA(k),X(k),Y(k),Z(k),A(k)];            % All data matrix
     cloud_cover = sum(isnan(raw_data(:,1)))/length(raw_data(:,1))*100;
 %% Find data that has classification as snow/no snow
     indTrain = isnan(raw_data(:,1));
@@ -102,7 +109,7 @@ for ip = 1
     Classified_data_KNN_fine.SnowClass = yfit_KNN_fine;
     gap_filled_data_KNN_fine = [Train_data;Classified_data_KNN_fine];
     snow_pixels_KNN_fine = sum(gap_filled_data_KNN_fine.SnowClass);
-    land_pixels_KNN_fine = length(gap_filled_data_KNN_fine.Lat)-snow_pixels_KNN_fine;
+    land_pixels_KNN_fine = length(gap_filled_data_KNN_fine.Lat)-snow_pixels_KNN_fine; 
 %%   
     [trainedClassifier_TREE_complex, validationAccuracy_TREE_complex] =  trainClassifier_TREE_complex(Train_data);
     yfit_TREE_complex =  trainedClassifier_TREE_complex.predictFcn(Classify_data) ;

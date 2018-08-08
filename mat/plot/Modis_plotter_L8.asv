@@ -1,12 +1,5 @@
-function Modis_plotter(data,geo,date_data)   
-%% Plotting outlines *.shp files
-% load('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\geo_hv17.mat')
-% S = shaperead('E:\Dropbox\Harmonie data\is50v_strandlina_flakar_ll');
-% vatnKAR = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\KAR_vatnasvid');
-% UTLINAVAT = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\VATNAJ__UTLINA');
-% UTLINAHOF = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\HOFSJ_UTLINA_nn');
-% UTLINALAN = shaperead('E:\Dropbox\Remote\Data handling\Coordinates from EOS2DUMP\LANGJ_UTLINA');
-%% [left bottom width height]
+function Modis_plotter_L8(data,geo,date_data,cbar)   
+
 vis = 'on';
 addpath('E:\Dropbox\Matlab\cbrewer');
 f = figure( 'visible',vis,'Position', [50, 100, 900, 600]);
@@ -29,11 +22,25 @@ plotm([geo.utlina_vat.Y],[geo.utlina_vat.X], 'k','linewidth',lw);
 plotm([geo.utlina_hof.Y],[geo.utlina_hof.X], 'k','linewidth',lw);
 plotm([geo.utlina_lan.Y],[geo.utlina_lan.X], 'k','linewidth',lw);
 
-%cmap = cbrewer('seq','Blues',25);
-%caxis([0 100])
+    cmap = cbrewer('seq','Blues',25);
+    caxis([0 100])
+hb=colorbar(cmap); 
+% if cbar == 1
+%     cmap = cbrewer('seq','Blues',25);
+%     caxis([0 100])
+%     hb=colorbar(cmap);
+% elseif cbar == 2
+%     caxis([1 2])
+%     %colorbar(mymap);
+% elseif cbar == 3
+%     cmap = [0 204/255 0 ;255/255 0 0]
+%     caxis([0 1])
+%     hb=colorbar(cmap);   
+% else
+% end
 %cmap = cbrewer('seq','YlGnBu',25);
 %colormap((cmap));
-hb=colorbar;
+
 %set(hb, 'Position', [.91 .13 .017 .78]);
 %set(hb,'TickLabelInterpreter','latex');
 %set(hb,'FontSize',12);
