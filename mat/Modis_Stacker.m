@@ -1,4 +1,7 @@
-function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins)  
+function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
+                                        img_dir,data_write_dir,write_data,...
+                                        plotting_on,print_fig,vis,ins,test_mode,...
+                                        cmapSnow,cmapAge)  
 % Aggregates merged MOD10A1 and MYD10A1 (MCDAT) data from the input
 % datastack to a single aggregated structure with data age and aggregated
 % fSCA
@@ -59,6 +62,7 @@ function Stacked_Stats = Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_op
 no_days = size(Data_stack);
 no_days = no_days(2);                       % Find number of days in data stack 
 no_data_number = -9999;
+lw = 0.1;
 %% Determine Center date
     if Center_Date_option == 1;
         Center_date = (length(Data_stack)-1)/2+1;           % Find the center of the data stack
@@ -82,14 +86,14 @@ if Center_Date_option == 1;
         Data_stacked_sca(ind_data_back) = Data_stack(i).MCDAT(ind_data_back);
 
     if  test_mode == 1;
-        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(i),geo,print_fig,img_dir,['DayInStack_',num2str(end_day+1-i),datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,lw);
+        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(i),geo,print_fig,img_dir,['_DIS_',num2str(end_day+1-i),'_',datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,cmapSnow);
     else
     end
     
         Data_stacked_sca(ind_data_forw) = Data_stack(end_day+1-i).MCDAT(ind_data_forw);
         
     if  test_mode == 1;
-        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(end_day+1-i),geo,print_fig,img_dir,['DayInStack_',num2str(end_day+1-i),datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,lw);
+        Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date_vector(end_day+1-i),geo,print_fig,img_dir,['_DIS_',num2str(end_day+1-i),'_',datestr(Date_vector(Center_date),'yyyymmdd'),'_',num2str(end_day),'D_Stack_fsca'],vis,cmapSnow);
     else
     end
         
@@ -125,25 +129,28 @@ end
      Stacked_Stats = [StackedResults,Merged_stats(:,1)',Merged_stats(:,2)']
     else
 end
+%%
 
-if  test_mode == 1;
-    print_name = 'Stack_out'
-    Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,lw)
-else
-end
-% Plotting
+%% Plotting    
+Date = Date_vector(Center_date);
 if plotting_on ==1;
-    close all, clc
-    lw = 0.1;                                   % Line width for plotting
-    Date = Date_vector(Center_date);
-    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_age'],vis,lw);
-    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_fsca'],vis,lw);
+     
+    Modis_Stacker_Plot_Data_Age(Data_stacked_age,end_day,Center_date,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_age'],vis,cmapAge);
+    Modis_Stacker_Plot_Data_sca(Data_stacked_sca,end_day,Date,geo,print_fig,img_dir,['_Agg_',num2str(end_day),'D_Stack_fsca'],vis,cmapSnow);
+    
+    if  test_mode == 1;
+    print_name = 'Stack_out'
+    Modis_Stacker_Plot_Stack(Data_stack,Date_vector,Center_date, geo,print_fig,img_dir,print_name,vis,cmapSnow)
+    else
+    end
+    
 else
 end
 %% Write data to MAT file
 if write_data == 1; 
-    cd(data_write_dir);
-    save(['MMCDDATA_7D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
+    %cd(data_write_dir);
+    %save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
+    save([data_write_dir,'\MMCDDATA_',num2str(end_day),'D_',datestr(Date,'yyyymmdd'),'.mat'],'Stacked_Stats', 'Data_stacked_age', 'Date_vector', 'Data_stacked_sca');
 else
 end
     

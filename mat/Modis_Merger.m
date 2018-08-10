@@ -1,3 +1,4 @@
+function Modis_Merger(mod_data_dir,myd_data_dir,img_dir,data_write_dir,geo_data_dir,cmapSnow,vis,printFigure,plotting_on);
 %% Merge TERRA and AQUA data daily files into one combined file
 %  If there is no AQUA file only TERRA is used for the first years of
 %  operation
@@ -8,24 +9,14 @@
 
 %% SYNTAX
 
-%% Folders and directories
-clear all; close all; clc
+%% OUTPUTS
+% MODDATA               to data_write_dir\MODDATA\ folder
+% MYDDATA               to data_write_dir\MYDDATA\ folder
+% MCDDATA               to data_write_dir\MCDDATA\ folder
+% Modis_Merger_Stats    to data_write_dir\Stats\ folder
 %%
-addpath('C:\Users\andrigun\Documents\GitHub\isca\mat')
-addpath('E:\Dropbox\Matlab')
-addpath('E:\Dropbox\Matlab\mraleigh')
-addpath('E:\Dropbox\Matlab\cbrewer')
-cd('C:\Users\andrigun\Documents\GitHub\isca\mat')
-%% Define directories
-mod_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MOD10A1';                              % Directory with Terra data
-myd_data_dir = 'E:\Dropbox\Remote\MODIS DATA\MYD10A1';                              % Directory with Aqua data
-img_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\06_img\tmp';       % Directory to store exported images
-data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\';  % Directory to write output files
-%% Settings
-vis = 'on';                                                                        % Visibility of figures On(1) / Off(0)                        
-printFigure = 0;                                                                    % Print figure to img_dir folder (1)
-geo = Modis_make_geo;                                                               % Data for plotting. Shape files and coordinates of hdf files
-[ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
+geo = Modis_make_geo(geo_data_dir);                                                               % Data for plotting. Shape files and coordinates of hdf files
+[ins, outs] = Modis_make_ins_outs(geo_data_dir);                                              % Loads masks for exluding data 
 %%
 MAT_Stats = table;                                                                  % Make an table to write statistics to 
 cd(mod_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
@@ -51,27 +42,29 @@ DATAFIELD_NAME='NDSI_Snow_Cover';   % DAta field from HDF file
 %%
 clc
 ii = 0;
-for k = run_dates(100);
-    % 20.12.2017 / 1:2000 keyrt á Elapsed time is 31556.819461 seconds. 
+for k = run_dates;
     ii = ii+1;
 % Find if we have data tiles that match the date we look for 
     imod_name = find([mod.daten]==k);      % index of file for the date
     imyd_name = find([myd.daten]==k);      % index of file for the date
  
-    if isempty(imod_name) == 1 && isempty(imyd_name) == 1 
+    if isempty(imod_name) == 1 && isempty(imyd_name) == 1; 
         continue
     end
     
-        if isempty(imod_name) == 0         % Zero if numbers are in matrix 
+        if isempty(imod_name) == 0;         % Zero if numbers are in matrix 
         fname_mod = mod(imod_name).name;   % name of the HDF file from MOD to use
-        cd(mod_data_dir)
+        cd(mod_data_dir);
         
         [MODDATA, MODDATA_NAME,MODHDF_DATE] = Modis_import_data_hdf(...
         fname_mod, GRID_NAME, DATAFIELD_NAME); 
         
         [av_mo,no_el_in_mo,no_el_data_mo,no_el_clouds_mo,prct_data_in_mo,prct_clouds_in_mo,csum1_mo,csum2_mo] =...
         Modis_in_filter_sca(MODDATA, ins.in_isl);
-        %Modis_plot_merger_AT(MODDATA,vis,printFigure,k,MODDATA_NAME,img_dir,geo,prct_clouds_in_mo)    
+             if plotting_on == 1;
+                Modis_Merger_Plot_Aqua_Terra(MODDATA,vis,printFigure,k,MODDATA_NAME,img_dir,geo,prct_clouds_in_mo,cmapSnow);    
+             else
+                end
         save([data_write_dir,'MODDATA\',MODDATA_NAME(1:15)],'MODDATA'); 
         
         else
@@ -86,15 +79,17 @@ for k = run_dates(100);
             csum2_mo= nan;
         end
     
-        if isempty(imyd_name) == 0      % Zero if numbers are in matrix 
+        if isempty(imyd_name) == 0;      % Zero if numbers are in matrix 
             fname_myd = myd(imyd_name).name;    % name of the HDF file from MYD to use%   
-            cd(myd_data_dir)
+            cd(myd_data_dir);
             [MYDDATA, MYDDATA_NAME,MYDHDF_DATE] = Modis_import_data_hdf(...
             fname_myd, GRID_NAME, DATAFIELD_NAME); 
             [av_my,no_el_in_my,no_el_data_my,no_el_clouds_my,prct_data_in_my,prct_clouds_in_my,csum1_my,csum2_my] =...
             Modis_in_filter_sca(MYDDATA, ins.in_isl);
-
-            %Modis_plot_merger_AT(MYDDATA,vis,printFigure,k,MYDDATA_NAME,img_dir,geo,prct_clouds_in_my) 
+                if plotting_on == 1;
+                  Modis_Merger_Plot_Aqua_Terra(MYDDATA,vis,printFigure,k,MYDDATA_NAME,img_dir,geo,prct_clouds_in_my,cmapSnow); 
+                else
+                end
             save([data_write_dir,'MYDDATA\',MYDDATA_NAME(1:15)],'MYDDATA'); 
         else
             clear MYDDATA MYDDATA_NAME MYDHDF_DATE
@@ -108,18 +103,18 @@ for k = run_dates(100);
             csum2_my= nan;
         end
         
-        if isempty(imod_name) == 0
+        if isempty(imod_name) == 0;
             MCDAT = MODDATA;
             x = isnan(MCDAT);
             MCDDATA_NAME = MODDATA_NAME; MCDDATA_NAME(2) = 'C';
-            mod_used = 1
-        elseif isempty(imod_name) == 1
+            mod_used = 1;
+        elseif isempty(imod_name) == 1;
             MCDAT = MYDDATA;
             MCDDATA_NAME = MYDDATA_NAME; MCDDATA_NAME(2) = 'C';
-            myd_used = 2
+            myd_used = 2;
         end
         
-        if isempty(imyd_name) == 0
+        if isempty(imyd_name) == 0;
             MCDAT(x) = MYDDATA(x);
         else
             MCDAT = MODDATA;
@@ -146,13 +141,13 @@ for k = run_dates(100);
         MAT_Stats = [MAT_Stats;x_t];
 
        
-        Modis_P_merger_Aqua_Terra(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc) 
+        Modis_Merger_Plot_Aqua_Terra(MCDAT,vis,printFigure,k,MCDDATA_NAME,img_dir,geo,prct_clouds_in_mc,cmapSnow); 
         save([data_write_dir,'MCDDATA\',MCDDATA_NAME(1:15)],'MCDAT'); 
         
         close all
-        %clear MCDAT MODDATA MYDDATA x_t
+        sprintf(['Date ',datestr(Daten),' done'])
 end
          
-        save([data_write_dir,'Stats\','MAT_Stats'],'MAT_Stats');  
+        save([data_write_dir,'Stats\','Modis_Merger_Stats'],'MAT_Stats');  
     
-    sprintf('FINISHED')
+    sprintf('FINISHED WITH ALL')

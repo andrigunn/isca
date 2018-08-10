@@ -1,11 +1,12 @@
-function [ins, outs] = Modis_make_ins_outs
+function [ins, outs] = Modis_make_ins_outs(geo_data_dir); 
 %% Create in's and outs's for data selection. 
 %% Output
 % ins where data within the shape file is 1
 % outs where data outside the shapefile is 1
 %%
 clc
-cd('E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo\ins')
+cd([geo_data_dir,'\ins'])
+
 %%
 load('in_Hofsj.mat')
 ins.in_hof = in;

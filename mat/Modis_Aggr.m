@@ -1,7 +1,9 @@
 function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,...
                     mcd_data_dir,data_write_dir,img_dir,write_data,...
                     print_fig,plotting_on,vis,...
-                    test_mode, test_date)
+                    test_mode, test_date,...
+                    cmapSnow,cmapAge,...
+                    geo_data_dir)
 %%
 % Makes a data stack from MCD10A1_YYYYDOY merged Aqua and Terra tiles for
 % same dates and then aggrigates the stack
@@ -62,9 +64,22 @@ function Modis_Aggr(Center_Date_option,day_buffer_forward,day_buffer_backward,..
 %% SETTINGS
 
 %% Settings
-geo = Modis_make_geo;                                                             % Data for plotting. Shape files and coordinates of hdf files
-[ins, outs] = Modis_make_ins_outs;                                                  % Loads masks for exluding data 
-%%
+geo = Modis_make_geo(geo_data_dir);                                                             % Data for plotting. Shape files and coordinates of hdf files
+[ins, outs] = Modis_make_ins_outs(geo_data_dir);                                                  % Loads masks for exluding data 
+time_dim = day_buffer_backward + 1 + day_buffer_forward;                   % Number of days used in the temporal filter
+Modis_Aggr_Stats = ones(1,3+time_dim*2);
+%% Make a diretory name to store images and data
+data_write_dir_stacker = [data_write_dir,'MMCDDATA_',num2str(time_dim),'D'];
+img_dir_stacker = [img_dir,'MMCDDATA_',num2str(time_dim),'D'];
+% Check if dir exits   
+if ~exist(data_write_dir_stacker,'dir') 
+    mkdir(data_write_dir_stacker); 
+end
+
+if ~exist(img_dir_stacker,'dir')
+    mkdir(img_dir_stacker); 
+end
+
 cd(mcd_data_dir);                                                                    % CD to data folder with hdf files for MOD10A1 product
 mcd = dir('MCD10A1*');                                                              % Read directory structure
 mcd = dates2header_matFile(mcd);                                                    % Write time and date information to directory information for data
@@ -72,47 +87,52 @@ years_in_dataset = unique([mcd.year]);                                          
 ii = 0;
 time_dim = day_buffer_backward + 1 + day_buffer_forward;                   % Number of days used in the temporal filter
 
-if test_mode == 0
+if test_mode == 0;
 % Find each individual year in the dataset MCD10A1
 
-for ky = 1:length(years_in_dataset);                                       % Counter for number of years in the dataset                             
-    ki = find([mcd.year] == years_in_dataset(ky));                         % Indexes for years in ky
-% Counter for center location in datastructure and +/- days to merge    
-    for j = day_buffer_backward:length(ki)-day_buffer_forward;
-        ind = ki(j);
-        
-        if ind == day_buffer_backward;                                      % To account for first index ?
-            i0 = ind-day_buffer_backward;
-        else
-            i0 = ind-day_buffer_backward-1;                                 % All other indexes
-        end
-    end
+    for ky = 1:length(years_in_dataset);                                       % Counter for number of years in the dataset                             
+        ki = find([mcd.year] == years_in_dataset(ky));                         % Indexes for years in ky
+    % Counter for center location in datastructure and +/- days to merge    
+            for j = day_buffer_backward:length(ki)-day_buffer_forward;
+                ind = ki(j);
+
+                    if ind == day_buffer_backward;                                      % To account for first index ?
+                        i0 = ind-day_buffer_backward;
+                    else
+                        i0 = ind-day_buffer_backward-1;                                 % All other indexes
+                    end
+            
 %% Maker each data stack to merge
-            for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
-                cd(mcd_data_dir);     
-                i0 = i0+1;
-                Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                Date_vector(ji,:) = mcd(i0).daten;
-                Data_name(ji,:) = mcd(i0).name;
+                for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
+                    cd(mcd_data_dir);     
+                    i0 = i0+1;
+                    Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
+                    Date_vector(ji,:) = mcd(i0).daten;
+                    Data_name(ji,:) = mcd(i0).name;
+
+                end
+                    Stacked_Stats =  Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,img_dir_stacker,data_write_dir_stacker,write_data,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge);     
+                    Modis_Aggr_Stats =[Modis_Aggr_Stats;Stacked_Stats];
+                    sprintf(['Temoral filter of ',num2str(time_dim),' days for date ',datestr(Date_vector(1))])
             end
-                
-                Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
-end
-else % If test mode is enabled
-       i0 = find([mcd(:).daten] == test_date);
-       i0 = i0-1;
-       sprintf('Test on')
-       %% Maker each data stack to merge
-            for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
-                cd(mcd_data_dir);     
-                i0 = i0+1;
-                Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
-                Date_vector(ji,:) = mcd(i0).daten;
-                Data_name(ji,:) = mcd(i0).name;
-            end
-                sprintf('Test on')
-                Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
-                    img_dir,data_write_dir,write_data,plotting_on,print_fig,vis,ins); 
-end
+    end
+            else % If test mode is enabled
+                   i0 = find([mcd(:).daten] == test_date);
+                   i0 = i0-1;
+                   sprintf('Test on');
+                   %% Maker each data stack to merge
+                        for ji = 1:time_dim;                                            % Process each year, time_dim length of filter (days)
+                            cd(mcd_data_dir);     
+                            i0 = i0+1;
+                            Data_stack(:,ji) = load(mcd(i0).name);                              % Raw data from Merged AT
+                            Date_vector(ji,:) = mcd(i0).daten;
+                            Data_name(ji,:) = mcd(i0).name;
+                        end
+                            sprintf('Test on')
+                            Modis_Stacker(Data_stack,Date_vector,geo,Center_Date_option,...
+                            img_dir_stacker,data_write_dir,data_write_dir_stacker,plotting_on,print_fig,vis,ins,test_mode,cmapSnow,cmapAge); 
+                        end
+
+save([data_write_dir,'Stats\','Modis_Aggr_Stats_',num2str(time_dim)],'Modis_Aggr_Stats');
+sprintf('FINISHED')
 end
