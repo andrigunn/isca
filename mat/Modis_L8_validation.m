@@ -159,7 +159,7 @@ end
     Modis_Landsat_comp_Stats(1,:) = [];
 
 
-save([data_write_dir,'Stats\','Modis_Landsat_comp_Stats'],'Modis_Landsat_comp_Stats');
+save([data_write_dir,'Stats\','Modis_Landsat8_comp_Stats'],'Modis_Landsat_comp_Stats');
 
 crop(img_dir)
 sprintf('FINISHED')

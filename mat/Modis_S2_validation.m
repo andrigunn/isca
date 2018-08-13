@@ -4,19 +4,16 @@
 clear all, close all, clc
 %%
 addpath('/Users/andrigun/Documents/GitHub')
-%mod_data_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\MCDDATA';               % Modis data to compare to 
-mod_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/MCDDATA';
-
-S2_data_dir = '/Users/andrigun/Dropbox/Sentinel2A';                         % Directory of Sentinel data
-%geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
-
-geo_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/geo';
-
-%img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\L08_testing'
-img_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA';
-
-%data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\'; 
-data_write_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data';
+mod_data_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\MCDDATA';               % Modis data to compare to 
+%mod_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/MCDDATA';
+S2_data_dir = 'E:\Dropbox\Sentinel2A'
+%S2_data_dir = '/Users/andrigun/Dropbox/Sentinel2A';                         % Directory of Sentinel data
+geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
+%geo_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/geo';
+img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\L08_testing'
+%img_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA';
+data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\'; 
+%data_write_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data';
 print_fig = 0
 geo = Modis_make_geo(geo_data_dir);
 %% Find all directories from L08 Preprocessing and untaring
@@ -35,13 +32,14 @@ for i = 1:no_S2_scenes
     S2MetaRead = dir('MTD*'); 
     [ S2_meta ] = xml2struct( S2MetaRead.name)
     S2_Date = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_START_TIME.Text
-    S2_Daten = datenum(S2_Date,'yyyy-mm-ddTHH:MM:SS.FFFZ')
+    S2_Daten = datenum(S2_Date,'yyyy-mm-dd')%THH:MM:SS.FFFZ')
     S2_Date = datestr(S2_Daten,'yyyy-mm-dd')
     S2_data_name = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_URI.Text
     %% Load MODIS data for the aquire date of Sentinel 2A
     cd(mod_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
     mod = dir('M*');   
-    mod = dates2header_matFile(mod);   
+    mod = dates2header_matFile(mod);
+    
     ind_modis = find([mod(:).daten] == S2_Daten)
     S = whos( '-file',mod(ind_modis).name)
     load(mod(ind_modis).name);   
@@ -85,12 +83,13 @@ for i = 1:no_S2_scenes
 
         NaNMask = [1,2,3,6,7,8,9,10];
 %% read data from Landsat sub image folder
-        S2_scl_scene = [S2_meta.Children(2).Children(2).Children(24).Children(2).Children(2).Children(24).Children.Data,'.jp2']
+        S2_scl_scene = [S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.Product_Organisation.Granule_List{1, 1}.Granule.IMAGE_FILE{1, 12}.Text]
        %% cd(S2_subdata_dir)
-        S2_scl_scene = ['T27WWM_20180422T125259_SCL_60m.tif']
+        cd([S2_data_dir,'/',S2_subdata_dir])
+        S2_scl_scene = [S2_scl_scene,'_wgs.tif']
         %%
         [QA, RQ]  = geotiffread(S2_scl_scene);
-        %QA = double(QA);%/100000;
+        QA = double(QA);
 %%
         % Mask NaN Fill
             c = ismember(QA,Fill);
@@ -114,7 +113,7 @@ for i = 1:no_S2_scenes
     modis_comparison_data = MCDAT;
     modis_comparison_data(modis_comparison_data<5)= MV_Land;
     modis_comparison_data(modis_comparison_data>=5)= MV_Snow;
-    diff = modis_comparison_data-L8_500m;
+    diff = modis_comparison_data-S2_500m;
     diff(diff == -1) = 1;
 %% Plot MODIS data from mod data dir
     name_dataset = [mod(ind_modis).name];
@@ -130,31 +129,31 @@ for i = 1:no_S2_scenes
     print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca']
     Modis_plotter_L8(modis_comparison_data,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)   
 %% Plot Landsat 8 bSCA
-    name_dataset = L8_data_name;
-    name_date = datestr(L8_Date,'dd.mm.yyyy');
-    name = 'Landsat 8 500 m';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_L08_bsca']
-    Modis_plotter_L8(L8_500m,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)   
+    name_dataset = S2_data_name;
+    name_date = datestr(S2_Date,'dd.mm.yyyy');
+    name = 'Sentinel 2A@500 m';
+    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_S2A_bsca']
+    Modis_plotter_L8(S2_500m,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)   
 %%
     name_dataset = [mod(ind_modis).name];
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
-    name = 'Modis vs. Landsat 8';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_vs_L08_dsca']
+    name = 'Modis vs. Sentinel 2A';
+    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_vs_S2A_dsca']
     Modis_plotter_L8(diff,geo,name_dataset,name_date,name,'dSCA',print_fig,print_name,img_dir)   
 %% Stats for comparison
     diff_no_el = sum(sum(~isnan(diff)));
     diff_correct = sum(diff(:) == 0);
     diff_false = sum(diff(:) == 1);
-    no_snow_l8 = find(L8_500m == 1);
-    no_snow_l8 = numel(no_snow_l8)
-    no_land_l8 = find(L8_500m == 2);
-    no_land_l8 = numel(no_land_l8)
+    no_snow_S2 = find(S2_500m == 1);
+    no_snow_S2 = numel(no_snow_l8)
+    no_land_S2 = find(S2_500m == 2);
+    no_land_S2 = numel(no_land_l8)
     
-    Confusion_matrix = confusionmat(modis_comparison_data(:),L8_500m(:))
+    Confusion_matrix = confusionmat(modis_comparison_data(:),S2_500m(:))
 %% Mask the MODIS data tile to the pixel vise coverage of the MODIS tiles
-    L8_mask = L8_500m;
-    L8_mask(~isnan(L8_mask)) = 1;
-    Modis_masked = L8_mask.*modis_comparison_data;
+    S2_mask = S2_500m;
+    S2_mask(~isnan(S2_mask)) = 1;
+    Modis_masked = S2_mask.*modis_comparison_data;
 %%
     no_snow_mod = find(Modis_masked == 1);
     no_snow_mod = numel(no_snow_mod)
@@ -165,30 +164,30 @@ for i = 1:no_S2_scenes
 %%
     name_dataset = [mod(ind_modis).name];
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
-    name = 'Modis at Landsat 8 boundary';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca_L08_boundary']
+    name = 'Modis at Sentinel 2A boundary';
+    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca_S2A_boundary']
     Modis_plotter_L8(Modis_masked,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)  
 
 %% Load data to table     
-    Ti = [(mod(ind_modis).daten), no_snow_mod, no_land_mod, no_snow_l8,no_land_l8];
+    Ti = [(mod(ind_modis).daten), no_snow_mod, no_land_mod, no_snow_S2,no_land_S2];
     T = [T;Ti];
 
     Di = [{mod(ind_modis).name}];
     D = [D;Di];
 
-    Fi = [{L8_data_name}];
+    Fi = [{S2_data_name}];
     F = [F;Fi];
 
-save([data_write_dir,'Landsat_tiles\',L8_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd')],'L8_500m');
+save([data_write_dir,'Sentinel_tiles\',S2_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd')],'S2_500m');
 
 end
 
-    Modis_Landsat_comp_Stats = table(T(:,1),T(:,2),T(:,3),T(:,4),T(:,5),D(:,1),F(:,1));
-    Modis_Landsat_comp_Stats.Properties.VariableNames = {'daten','no_snow_mod','no_land_mod', 'no_snow_l8','no_land_l8','Mod_dataname','L08_dataname'};
-    Modis_Landsat_comp_Stats(1,:) = [];
+    Modis_Sentinel_comp_Stats = table(T(:,1),T(:,2),T(:,3),T(:,4),T(:,5),D(:,1),F(:,1));
+    Modis_Sentinel_comp_Stats.Properties.VariableNames = {'daten','no_snow_mod','no_land_mod', 'no_snow_S2','no_land_S2','Mod_dataname','S2_dataname'};
+    Modis_Sentinel_comp_Stats(1,:) = [];
 
 
-save([data_write_dir,'Stats\','Modis_Landsat_comp_Stats'],'Modis_Landsat_comp_Stats');
+save([data_write_dir,'Stats\','Modis_Sentine2_comp_Stats'],'Modis_Sentinel_comp_Stats');
 
 crop(img_dir)
 sprintf('FINISHED')
