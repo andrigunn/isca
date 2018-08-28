@@ -3,14 +3,14 @@
 %% TESTING
 clear all, close all, clc
 %%
-addpath('/Users/andrigun/Documents/GitHub')
+addpath('C:\Users\andrigun\Documents\GitHub\isca')
 mod_data_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\MCDDATA';               % Modis data to compare to 
 %mod_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/MCDDATA';
-S2_data_dir = 'E:\Dropbox\Sentinel2A'
+S2_data_dir = 'D:\Sentinel2_2A'
 %S2_data_dir = '/Users/andrigun/Dropbox/Sentinel2A';                         % Directory of Sentinel data
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
 %geo_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/geo';
-img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\L08_testing'
+img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\S2_testing'
 %img_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA';
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\'; 
 %data_write_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data';
@@ -19,17 +19,20 @@ geo = Modis_make_geo(geo_data_dir);
 %% Find all directories from L08 Preprocessing and untaring
 cd(S2_data_dir);
 S2 = dir('*.SAFE');   
-no_S2_scenes = length(S2)
 T = zeros(1,5);
 D = zeros(1,1);
 F = zeros(1,1);
+S2(1:127) = [];
+no_S2_scenes = length(S2)
 %%
 for i = 1:no_S2_scenes
     %%
+    cd(S2_data_dir);
     S2_subdata_dir = [S2(i).name]%,'\GRANULE',L08(i).name]
     cd(S2_subdata_dir)
     %% Read and make metadata for Sentinel 2
     S2MetaRead = dir('MTD*'); 
+    MTDMSIL2A = S2_meta_lineRead(S2MetaRead.name)
     [ S2_meta ] = xml2struct( S2MetaRead.name)
     S2_Date = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_START_TIME.Text
     S2_Daten = datenum(S2_Date,'yyyy-mm-dd')%THH:MM:SS.FFFZ')
@@ -41,6 +44,9 @@ for i = 1:no_S2_scenes
     mod = dates2header_matFile(mod);
     
     ind_modis = find([mod(:).daten] == S2_Daten)
+   if isempty(ind_modis) == 1
+        continue
+    end
     S = whos( '-file',mod(ind_modis).name)
     load(mod(ind_modis).name);   
     %% Sentinel 2 settings
@@ -78,15 +84,26 @@ for i = 1:no_S2_scenes
         Clear =	[4, 5];%, 386, 834, 898, 1346];
         MV_Land = 1;
 
-        Snow = [11]%, 400, 432, 848, 880, 912, 944, 1352];
+        Snow = [11];%, 400, 432, 848, 880, 912, 944, 1352];
         MV_Snow = 2;
 
         NaNMask = [1,2,3,6,7,8,9,10];
 %% read data from Landsat sub image folder
-        S2_scl_scene = [S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.Product_Organisation.Granule_List{1, 1}.Granule.IMAGE_FILE{1, 12}.Text]
+    clear S2_scl_scene
+        %S2_scl_scene = [S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.Product_Organisation.Granule_List{1, 1}.Granule.IMAGE_FILE{1, 12}.Text]
+        %S2_scl_scene = [S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.Product_Organisation.Granule_List(1, 1).Granule.IMAGE_FILE(1, 12).Text]
+        %S2_scl_scene = S2_scl_scene(1:end-30)
        %% cd(S2_subdata_dir)
-        cd([S2_data_dir,'/',S2_subdata_dir])
-        S2_scl_scene = [S2_scl_scene,'_wgs.tif']
+        %cd([S2_data_dir,'\',S2_subdata_dir])
+        cd(S2_data_dir)
+        cd(S2_subdata_dir)
+        cd('GRANULE')
+        a1 = dir
+        %name = a1(~strncmp(a1, 'L*', 1))   % No files starting with '.'
+        folder = char({a1(4).name})
+        cd(folder)
+        cd('IMG_DATA\R60m')
+        S2_scl_scene = ['pixel_qa_wgs.tif']
         %%
         [QA, RQ]  = geotiffread(S2_scl_scene);
         QA = double(QA);
@@ -145,9 +162,9 @@ for i = 1:no_S2_scenes
     diff_correct = sum(diff(:) == 0);
     diff_false = sum(diff(:) == 1);
     no_snow_S2 = find(S2_500m == 1);
-    no_snow_S2 = numel(no_snow_l8)
+    no_snow_S2 = numel(no_snow_S2)
     no_land_S2 = find(S2_500m == 2);
-    no_land_S2 = numel(no_land_l8)
+    no_land_S2 = numel(no_land_S2)
     
     Confusion_matrix = confusionmat(modis_comparison_data(:),S2_500m(:))
 %% Mask the MODIS data tile to the pixel vise coverage of the MODIS tiles
@@ -179,7 +196,7 @@ for i = 1:no_S2_scenes
     F = [F;Fi];
 
 save([data_write_dir,'Sentinel_tiles\',S2_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd')],'S2_500m');
-
+close all
 end
 
     Modis_Sentinel_comp_Stats = table(T(:,1),T(:,2),T(:,3),T(:,4),T(:,5),D(:,1),F(:,1));

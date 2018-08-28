@@ -3,7 +3,6 @@ function Modis_Gap_Fill_Classifiers(data_dir_data_to_classify,save_name)
 %data_dir_data_to_classify = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\MCDDATA'
 data_dir_data_to_classify = 'F:\Maelingar\brunnur\Data\ISCA\Data\MMCDDATA_3D'
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
-save_name = 'MMCDDATA_3D'
 %% Read DEM for ICELAND from GDAL output
 [Zdem,Rdem] = arcgridread([geo_data_dir,'\isl_dem_500m_wgs.txt']);     % Read in DEM for ICELAND
 [Zasp,Rasp] = arcgridread([geo_data_dir,'\isl_aspect_500m_wgs.txt']);  % Read in ASPECT for ICELAND
@@ -142,7 +141,7 @@ end
 Results = array2table(results)
 Results.Properties.VariableNames = {'Date','CloudCover','Val_acc_KNN','SnowPixels_KNN','LandPixels_KNN','Val_acc_TREE','SnowPixels_TREE','LandPixels_TREE','Val_acc_BOO','SnowPixels_BOO','LandPixels_BOO','Val_acc_KNNw','SnowPixels_KNNw','LandPixels_KNNw'};
 
-save([data_write_dir,'\GapFilledData_',save_name],'Results');
+save([data_write_dir,'\GapFilledData_MMCDDATA_3D',],'Results');
 
 %data_write_dir
 

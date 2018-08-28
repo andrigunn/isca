@@ -1,6 +1,6 @@
 function Modis_plotter_L8(data,geo,name_dataset,name_date,name,cbar,print_fig,print_name,img_dir,title_of_figure)   
 
-vis = 'on';
+vis = 'off';
 addpath('E:\Dropbox\Matlab\cbrewer');
 f = figure( 'visible',vis,'Position', [50, 100, 900, 600]);
 %
@@ -40,7 +40,7 @@ if cbar == 'fSCA'
     name_str3 = title_of_figure;
     hText = text(0.01,0.03,name_str1,'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     hText = text(0.5,1,name_str3,'Units','normalized','HorizontalAlignment','center','VerticalAlignment','middle', 'Interpreter', 'none');
-    hText = text(0.7,0.03,['ID: ',name_str2],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
+    hText = text(0.01,-0.05,['ID: ',name_str2],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     hText = text(0.01,0.06,['Date: ',name_date],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     hText = text(0.01,0.09,[name],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     
@@ -57,7 +57,7 @@ elseif cbar == 'bSCA'
     name_str1 = ['NDSI Snow Cover bSCA'];
     name_str2 = [name_dataset];
     hText = text(0.01,0.03,name_str1,'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
-    hText = text(0.7,0.03,['ID: ',name_str2],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
+    hText = text(0.01,-0.05,['ID: ',name_str2],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     hText = text(0.01,0.06,['Date: ',name_date],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     hText = text(0.01,0.09,[name],'Units','normalized','HorizontalAlignment','left','VerticalAlignment','bottom', 'Interpreter', 'none');
     

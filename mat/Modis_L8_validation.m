@@ -7,11 +7,11 @@
 clear all, close all
 %%
 mod_data_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\MCDDATA';               % Modis data to compare to 
-L08_data_dir = 'E:\Dropbox\Landsat8_2A';                                    % Directory of Landsat data
+L08_data_dir = 'D:\Landsat8_2A';                                    % Directory of Landsat data
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
 img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\L08_testing'
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\'; 
-print_fig = 1
+print_fig = 0
 geo = Modis_make_geo(geo_data_dir);
 %% Find all directories from L08 Preprocessing and untaring
 cd(L08_data_dir);
@@ -60,7 +60,7 @@ for i = 1:no_l8_scenes
         NaNMask = [Water,Cloud_Shadow,Cloud,Low_confidence_cloud,Medium_confidence_cloud,High_confidence_cloud,Low_confidence_cirrus,High_confidence_cirrus,Terrain_occlusion];
         % read data from Landsat sub folder
         cd(L08_subdata_dir)
-        [QA, RQ]  = geotiffread('pixel_qa_500_wgs.tif');
+        [QA, RQ]  = geotiffread('pixel_qa_wgs.tif');
         QA = double(QA);%/100000;
 %%
         % Mask NaN Fill
@@ -152,6 +152,8 @@ for i = 1:no_l8_scenes
 
 save([data_write_dir,'Landsat_tiles\',L8_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd')],'L8_500m');
 
+close all
+
 end
 
     Modis_Landsat_comp_Stats = table(T(:,1),T(:,2),T(:,3),T(:,4),T(:,5),D(:,1),F(:,1));
@@ -163,7 +165,6 @@ save([data_write_dir,'Stats\','Modis_Landsat8_comp_Stats'],'Modis_Landsat_comp_S
 
 crop(img_dir)
 sprintf('FINISHED')
-
 
 
 
