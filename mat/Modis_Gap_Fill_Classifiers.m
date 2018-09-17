@@ -1,15 +1,15 @@
 function Modis_Gap_Fill_Classifiers(data_dir_data_to_classify,save_name)
 %% TESTING
 %data_dir_data_to_classify = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\MCDDATA'
-data_dir_data_to_classify = 'F:\Maelingar\brunnur\Data\ISCA\Data\MMCDDATA_3D'
+data_dir_data_to_classify = 'F:\Maelingar\brunnur\Data\ISCA\Data\MMCDDATA_5D'
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
-save_name = 'MMCDDATA_3D'
+save_name = 'MMCDDATA_5D'
 %% Read DEM for ICELAND from GDAL output
 [Zdem,Rdem] = arcgridread([geo_data_dir,'\isl_dem_500m_wgs.txt']);     % Read in DEM for ICELAND
 [Zasp,Rasp] = arcgridread([geo_data_dir,'\isl_aspect_500m_wgs.txt']);  % Read in ASPECT for ICELAND
 
 geo = Modis_make_geo(geo_data_dir);
-data_write_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\GapFilling';
+data_write_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\GapFilling_ts';
 %%
 %load('E:\Dropbox\Remote\geo_mcd43a3');        
 %% Map elevation to Lat and Lon from MODIS
@@ -60,10 +60,10 @@ elseif TF == 0
     end
 end
 %% === Read MODIS tile for data structure === %% 
-clear results
+clear results GFD
 ic = 0;
 tic
-for ip = 100
+for ip = 1:1000
     ic = ic+1;
     load(nfile(ip).name)
 %% Mask data
@@ -136,13 +136,20 @@ for ip = 100
                         validationAccuracy_TREE_complex,snow_pixels_TREE_complex,land_pixels_TREE_complex...
                         validationAccuracy_BOOST,       snow_pixels_BOOST,       land_pixels_BOOST,...
                         validationAccuracy_KNN_weighted,snow_pixels_KNN_weighted,land_pixels_KNN_weighted];
-    
+%% Daily save of data    
+    GFD.KNNW = gap_filled_data_KNN_weighted;
+    GFD.KNNF = gap_filled_data_KNN_fine;
+    GFD.TREE = gap_filled_data_TREE_complex;
+    GFD.BOOS = gap_filled_data_BOOST;
+    GFD.DATE = nfile(ip).datenum;
+    DNAME = GFD.DATE;
+    save([data_write_dir,'\',num2str(DNAME),'_GFD_',save_name],'GFD');
 end
 %%
 Results = array2table(results)
 Results.Properties.VariableNames = {'Date','CloudCover','Val_acc_KNN','SnowPixels_KNN','LandPixels_KNN','Val_acc_TREE','SnowPixels_TREE','LandPixels_TREE','Val_acc_BOO','SnowPixels_BOO','LandPixels_BOO','Val_acc_KNNw','SnowPixels_KNNw','LandPixels_KNNw'};
 
-save([data_write_dir,'\GapFilledData_',save_name],'Results');
+save([data_write_dir,'\GapFilledData_tmp',save_name],'Results');
 
 %data_write_dir
 

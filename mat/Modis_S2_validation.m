@@ -6,7 +6,8 @@ clear all, close all, clc
 addpath('C:\Users\andrigun\Documents\GitHub\isca')
 mod_data_dir = 'F:\Maelingar\brunnur\Data\ISCA\Data\MCDDATA';               % Modis data to compare to 
 %mod_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/MCDDATA';
-S2_data_dir = 'D:\Sentinel2_2A'
+%S2_data_dir = 'D:\Sentinel2_2A'
+S2_data_dir = 'X:\isca_backup\SCL'
 %S2_data_dir = '/Users/andrigun/Dropbox/Sentinel2A';                         % Directory of Sentinel data
 geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
 %geo_data_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data/geo';
@@ -14,30 +15,41 @@ img_dir = 'F:\Maelingar\brunnur\Data\ISCA\img\S2_testing'
 %img_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA';
 data_write_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\'; 
 %data_write_dir = '/Users/andrigun/Dropbox/01 - Icelandic Snow Observatory - ISO/ISCA/05_data';
-print_fig = 0
+print_fig = 1
 geo = Modis_make_geo(geo_data_dir);
 %% Find all directories from L08 Preprocessing and untaring
 cd(S2_data_dir);
-S2 = dir('*.SAFE');   
+%%
+S2 = dir('*QA*');   
 T = zeros(1,5);
 D = zeros(1,1);
 F = zeros(1,1);
-S2(1:127) = [];
+%S2(1:127) = [];
 no_S2_scenes = length(S2)
-%%
+%% Stop in 444. Started in 700 again Check in between
 for i = 1:no_S2_scenes
     %%
     cd(S2_data_dir);
-    S2_subdata_dir = [S2(i).name]%,'\GRANULE',L08(i).name]
-    cd(S2_subdata_dir)
+    %S2_subdata_dir = [S2(i).name]%,'\GRANULE',L08(i).name]
+    %cd(S2_subdata_dir)
     %% Read and make metadata for Sentinel 2
-    S2MetaRead = dir('MTD*'); 
-    MTDMSIL2A = S2_meta_lineRead(S2MetaRead.name)
-    [ S2_meta ] = xml2struct( S2MetaRead.name)
-    S2_Date = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_START_TIME.Text
-    S2_Daten = datenum(S2_Date,'yyyy-mm-dd')%THH:MM:SS.FFFZ')
+    %S2MetaRead = dir('MTD*'); 
+    %MTDMSIL2A = S2_meta_lineRead(S2MetaRead.name)
+    %[ S2_meta ] = xml2struct( S2MetaRead.name)
+    %S2_Date = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.L2A_Product_Info.PRODUCT_START_TIME.Text
+    %S2_Date = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_START_TIME.Text
+    %S2_Daten = datenum(S2_Date,'yyyy-mm-dd')%THH:MM:SS.FFFZ')
+    %S2_Date = datestr(S2_Daten,'yyyy-mm-dd')
+    S2_data_name = S2(i).name;
+       
+    expression = '[0123456789]+T[0123456789]';
+    startIndex = regexp(S2_data_name,expression)
+    
+    S2_Daten = datenum(S2_data_name(15:15+7),'yyyymmdd')%THH:MM:SS.FFFZ')
     S2_Date = datestr(S2_Daten,'yyyy-mm-dd')
-    S2_data_name = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_URI.Text
+    
+    %S2_data_name = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.L2A_Product_Info.PRODUCT_URI_2A.Text
+    %S2_data_name = S2_meta.n1_colon_Level_dash_2A_User_Product.n1_colon_General_Info.Product_Info.PRODUCT_URI.Text
     %% Load MODIS data for the aquire date of Sentinel 2A
     cd(mod_data_dir)                                                                    % CD to data folder with hdf files for MOD10A1 product
     mod = dir('M*');   
@@ -96,14 +108,14 @@ for i = 1:no_S2_scenes
        %% cd(S2_subdata_dir)
         %cd([S2_data_dir,'\',S2_subdata_dir])
         cd(S2_data_dir)
-        cd(S2_subdata_dir)
-        cd('GRANULE')
-        a1 = dir
-        %name = a1(~strncmp(a1, 'L*', 1))   % No files starting with '.'
-        folder = char({a1(4).name})
-        cd(folder)
-        cd('IMG_DATA\R60m')
-        S2_scl_scene = ['pixel_qa_wgs.tif']
+%         cd(S2_subdata_dir)
+%         cd('GRANULE')
+%         a1 = dir
+        %% name = a1(~strncmp(a1, 'L*', 1))   % No files starting with '.'
+%         folder = char({a1(3).name})
+%         cd(folder)
+%         cd('IMG_DATA\R60m')
+         S2_scl_scene = [S2_data_name];
         %%
         [QA, RQ]  = geotiffread(S2_scl_scene);
         QA = double(QA);
@@ -137,25 +149,25 @@ for i = 1:no_S2_scenes
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
     name = 'Modis 500 m';
     title_of_figure = 'MODIS'
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_fsca']
+    print_name = [num2str(i),'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_fsca']
     Modis_plotter_L8(MCDAT,geo,name_dataset,name_date,name,'fSCA',print_fig,print_name,img_dir,title_of_figure)   
 %% Plot MODIS bSCA
     name_dataset = [mod(ind_modis).name];
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
     name = 'Modis 500 m';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca']
+    print_name = [num2str(i),'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca']
     Modis_plotter_L8(modis_comparison_data,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)   
 %% Plot Landsat 8 bSCA
     name_dataset = S2_data_name;
     name_date = datestr(S2_Date,'dd.mm.yyyy');
     name = 'Sentinel 2A@500 m';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_S2A_bsca']
+    print_name = [num2str(i),'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'_S2A_bsca']
     Modis_plotter_L8(S2_500m,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)   
 %%
     name_dataset = [mod(ind_modis).name];
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
     name = 'Modis vs. Sentinel 2A';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_vs_S2A_dsca']
+    print_name = [num2str(i),'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_vs_S2A_dsca']
     Modis_plotter_L8(diff,geo,name_dataset,name_date,name,'dSCA',print_fig,print_name,img_dir)   
 %% Stats for comparison
     diff_no_el = sum(sum(~isnan(diff)));
@@ -177,12 +189,11 @@ for i = 1:no_S2_scenes
     no_land_mod = find(Modis_masked == 2);
     no_land_mod = numel(no_land_mod)
 
-
 %%
     name_dataset = [mod(ind_modis).name];
     name_date = datestr(mod(ind_modis).daten,'dd.mm.yyyy');
     name = 'Modis at Sentinel 2A boundary';
-    print_name = [datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca_S2A_boundary']
+    print_name = [num2str(i),'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'_mod_bsca_S2A_boundary']
     Modis_plotter_L8(Modis_masked,geo,name_dataset,name_date,name,'bSCA',print_fig,print_name,img_dir)  
 
 %% Load data to table     
@@ -195,7 +206,7 @@ for i = 1:no_S2_scenes
     Fi = [{S2_data_name}];
     F = [F;Fi];
 
-save([data_write_dir,'Sentinel_tiles\',S2_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd')],'S2_500m');
+save([data_write_dir,'Sentinel_tiles\',S2_data_name,'_',datestr(mod(ind_modis).daten,'yyyymmdd'),'.mat'],'S2_500m');
 close all
 end
 

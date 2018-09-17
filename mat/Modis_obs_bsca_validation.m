@@ -1,4 +1,8 @@
 figure, hold on
+geo_data_dir = 'E:\Dropbox\01 - Icelandic Snow Observatory - ISO\ISCA\05_data\geo';
+geo = Modis_make_geo(geo_data_dir);  
+latlimit = [63.35 66.58];
+lonlimit = [-24.6 -13.4];
 axesm('MapProjection','mercator','MapLatLimit',latlimit,'MapLonLimit',lonlimit);
 lw = 0.5;
 fillm([geo.utlina_isl(4524).Y],[geo.utlina_isl(4524).X], 'FaceColor',[224/255 224/255 224/255],'linewidth',lw);
@@ -32,11 +36,12 @@ for ind = 1:numel(bubsizes)
    legentry{ind} = num2str(bubsizes(ind));
 end
 hraw = scatterm(S_x,-S_y,r/8,c,'filled','MarkerFaceAlpha',.5)
-colormap(cbrewer('seq','Reds',25))
+colormap(cbrewer('seq','Reds',10))
+colormap(cbrewer('qual','Set1',10))
 colorbar
-legend(legentry)
+%legend(legentry)
 
 title('Average correlation - MODIS vs. Manned observations bSCA')
 
-h = scatter(r1,r2,a,'r','MarkerFaceColor','red')
-legend(legentry)
+% h = scatter(r1,r2,a,'r','MarkerFaceColor','red')
+% legend(legentry)
